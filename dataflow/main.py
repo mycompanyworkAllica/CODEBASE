@@ -15,6 +15,7 @@ class CopyBlobDoFn(beam.DoFn):
     def process(self, blob_name):
         match = re.match(r"(\d{4})/(\d{2})/(\d{2})/(.+)", blob_name)
         if not match:
+            yield f"Skipped (no match): {blob_name}"
             return
 
         year, month, day, filename = match.groups()
@@ -23,7 +24,12 @@ class CopyBlobDoFn(beam.DoFn):
         source_blob = self.bucket.blob(blob_name)
         destination_blob = self.bucket.blob(destination_path)
 
-        destination_blob.rewrite(source_blob)
+        # 🔁 Loop until rewrite completes
+        token = None
+        while True:
+            token, _, _ = destination_blob.rewrite(source_blob, token=token)
+            if token is None:
+                break
 
         yield f"Copied: {blob_name} → {destination_path}"
 
