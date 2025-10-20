@@ -29,4 +29,16 @@ link: https://docs.cloud.google.com/dataflow/docs/guides/create-pipeline-python
 TO USE A SERVICE ACCOUNT ACTIVATE sa LOCALLY: gcloud auth activate-service-account your-sa-name@tech-labs-gui.iam.gserviceaccount.com `
     --key-file="path/to/service-account-key.json"
 
+options = PipelineOptions(
+    runner='DataflowRunner',
+    project='tech-labs-gui',
+    region='us-central1',
+    temp_location=f'gs://{BUCKET_NAME}/tmp/',
+    staging_location=f'gs://{BUCKET_NAME}/staging/',
+    save_main_session=True,
+    network='vpc-gui-1',
+    subnetwork='regions/us-central1/subnetworks/subnet-01',
+    service_account_email='your-sa-name@tech-labs-gui.iam.gserviceaccount.com'
+)
+
 
